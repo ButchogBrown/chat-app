@@ -5,9 +5,11 @@ import { Button } from "../../components/ui/button";
 import Link from "../../components/custom/Link";
 import { Checkbox } from '@/components/ui/checkbox';
 import { CircleX } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 
 const login = () => {
+  const navigate = useNavigate()
   const [error, setError] = useState("")
   const [formData, setFormData] = useState({
     email: '',
@@ -21,9 +23,13 @@ const login = () => {
          "http://localhost:3000/api/v1/auth/login",
          formData
       )
+      localStorage.setItem("token", res.data.token)
+      navigate("/chat")
       console.log(res.data)
+
     }catch(error) {
       setError(error.response.data.message)
+      
       setTimeout(() => {
         setError("")
       }, 3000);

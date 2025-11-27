@@ -1,18 +1,30 @@
 import { Input } from '@/components/ui/input'
 import { Paperclip, Smile, Send } from 'lucide-react';
-import React from 'react'
+import React, { useState } from 'react'
 
-const MessageForm = () => {
+const MessageForm = ({ onSend }) => {
+
+    const [formData, setFormData] = useState({
+        message: ''
+    })
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        console.log('')
+        onSend(formData.message)
+    }
+
 return (
-<form action="" className=''>
+<form onSubmit={handleSubmit}>
     <div className='flex justify-between items-center gap-3 ml-5 mr-5'>
         <Paperclip size={30} color='gray' />
         <Input type="text" className="rounded-2xl text-gray-400 border-gray-300 bg-gray-100"
-            placeholder="Type a message..." />
+            placeholder="Type a message..." 
+            onChange={(e) => setFormData({...formData, message: e.target.value})}
+            />
         <Smile size={30} color='gray' />
-        <div className='bg-gray-300 rounded p-1'>
+        <button type='submit' className='bg-gray-300 rounded p-1'>
             <Send size={20} color='gray' />
-        </div>
+        </button>
     </div>
 
 </form>

@@ -12,12 +12,21 @@ const authRoute = require('./route/auth')
 const errorHandlerMiddleware = require('./middleware/error-handler')
 
 const app = express()
-const server = http.createServer(app)
-const io = new Server(server)
+const server = require('http').createServer(app)
+const io = require('socket.io')(server, {cors: {origin: "*"}})
 
-// io.on('connection', (socket) => {
-//     console.log("User connected")
-// })
+io.on('connection', (socket) => {
+    console.log(socket.id)
+
+    socket.on('message', (data) => {
+        const message = {
+            content: data,
+            date: new Date().toLocaleDateString()
+        }
+        socket.emit('message', message)
+    })
+
+})
 app.use(express.json())
 app.use(cors({
     origin: "http://localhost:5173"

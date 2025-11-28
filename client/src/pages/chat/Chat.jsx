@@ -1,28 +1,36 @@
 
 import ChatLayout from '@/components/chat-layout'
 import MessageForm from '@/components/message-form'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { io } from 'socket.io-client'
+import { UserContext } from '@/components/user-provider'
 
 const socket = io('http://localhost:3000')
 
 const Chat = ({children}) => {
+  const {userData, setUserData} = useContext(UserContext)
+  console.log(userData)
   const [message, setMessage] = useState()
-
+  //userId needs to be dynamic
   useEffect(() => {
     socket.on('connection')
-  }, [])
-
-  useEffect(() => {
+    socket.emit('join', {userId: 'chug'}) //make it dynamic later on
+    socket.on('private message', (data) => {
+      setMessage(data) //set the display data to be this value
+    })  
     socket.on('message', (data) => {
       setMessage(data)
     })
-  },[])
+
+    socket.on('online users', (users) => {
+      console.log(users)
+    })
+  }, [])
 
   const sendMessage = (sendMessage) => {
-    socket.emit('message', sendMessage)
+    socket.emit('private message',{content: sendMessage, to: 'chug'})
   }
-  
+
   return (
     <ChatLayout>
       <div className='flex flex-col justify-between items-start flex-1 '>

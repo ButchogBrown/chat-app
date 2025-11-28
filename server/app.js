@@ -15,9 +15,22 @@ const app = express()
 const server = require('http').createServer(app)
 const io = require('socket.io')(server, {cors: {origin: "*"}})
 
+const users = {}
 io.on('connection', (socket) => {
-    console.log(socket.id)
 
+    socket.on('join', ({userId}) => {
+        users[userId] = socket.id
+        io.emit('online users', users)
+    })
+    socket.on('private message', ({content, to}) => {
+        const recipientSocketId = users[to]
+        if(recipientSocketId) {
+            io.to(recipientSocketId).emit('private message', {
+                content: content,
+                date: new Date().toLocaleDateString()
+            })
+        }
+    })
     socket.on('message', (data) => {
         const message = {
             content: data,

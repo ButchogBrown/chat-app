@@ -17,18 +17,26 @@ const io = require('socket.io')(server, {cors: {origin: "*"}})
 
 const users = {}
 io.on('connection', (socket) => {
-
-    socket.on('join', ({userId}) => {
-        users[userId] = socket.id
+    socket.on('join', ({userData}) => {
+        users[userData.userId] = {
+            userId: userData.userId,
+            userName: userData.userName
+        }
         io.emit('online users', users)
+        console.log(users)
     })
     socket.on('private message', ({content, to}) => {
         const recipientSocketId = users[to]
+    
         if(recipientSocketId) {
             io.to(recipientSocketId).emit('private message', {
                 content: content,
                 date: new Date().toLocaleDateString()
             })
+            socket.emit('private message',{
+                content: content, 
+                date: new Date().toLocaleDateString
+            } )
         }
     })
     socket.on('message', (data) => {

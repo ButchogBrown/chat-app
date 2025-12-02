@@ -5,6 +5,8 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Chat from './pages/chat/Chat';
 import UserProvider from './components/user-provider';
+import Default from './pages/chat/Default';
+import SocketProvider from './components/socket-provider';
 
 function App() {
 
@@ -13,10 +15,18 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
-        <Route path='/chat' element={
+        <Route path="/home" element={
           <UserProvider>
-            <Chat />
+            <SocketProvider>
+              <Default />
+            </SocketProvider>
+          </UserProvider>
+          }/>
+        <Route path='/chat/:userId' element={
+          <UserProvider>
+            <SocketProvider>
+              <Chat />
+            </SocketProvider>
           </UserProvider>
           } />
       </Routes>

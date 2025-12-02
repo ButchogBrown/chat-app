@@ -8,7 +8,7 @@ function UserProvider({ children }) {
     const token = localStorage.getItem('token')
     if(token) {
       const decoded = jwtDecode(token)
-      setUserData({userId: decoded.userId})
+      setUserData({userId: decoded.userId, userName: decoded.userName})
     }
   }, [])
   return ( 

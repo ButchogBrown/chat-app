@@ -37,10 +37,10 @@ exports.login = async (req,res, next) => {
         if(!passwordMatch){
             throw new BadRequestError("Invalid email or password")
         }
-        
-        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: '1h'})
+        console.log(user    )
+        const token = jwt.sign({userId: user._id, userName: user.name}, process.env.JWT_SECRET, {expiresIn: '1h'})
 
-        res.status(200).json({token, user})
+        res.status(200).json({token})
     }catch(error) {
         console.log(error)
         next(error)

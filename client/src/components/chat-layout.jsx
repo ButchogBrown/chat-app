@@ -10,7 +10,7 @@ const ChatLayout = ({ children }) => {
             <div className='border-b border-gray-300'>
                 <SidebarTrigger className="justify-start " />
             </div>
-
+            
             {children}
         </main>
     </SidebarProvider>

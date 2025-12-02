@@ -4,31 +4,32 @@ import MessageForm from '@/components/message-form'
 import React, { useEffect, useState, useContext } from 'react'
 import { io } from 'socket.io-client'
 import { UserContext } from '@/components/user-provider'
+import { useParams } from 'react-router-dom'
 
 const socket = io('http://localhost:3000')
 
 const Chat = ({children}) => {
   const {userData, setUserData} = useContext(UserContext)
-  console.log(userData)
   const [message, setMessage] = useState()
-  //userId needs to be dynamic
+  const { userId } = useParams()
+  console.log(userId)
+
   useEffect(() => {
-    socket.on('connection')
-    socket.emit('join', {userId: 'chug'}) //make it dynamic later on
+    if(!userData) return;
+    
     socket.on('private message', (data) => {
+      console.log('irene')
       setMessage(data) //set the display data to be this value
     })  
     socket.on('message', (data) => {
       setMessage(data)
     })
 
-    socket.on('online users', (users) => {
-      console.log(users)
-    })
-  }, [])
+
+  }, [userData])
 
   const sendMessage = (sendMessage) => {
-    socket.emit('private message',{content: sendMessage, to: 'chug'})
+    socket.emit('private message',{content: sendMessage, to: '692967c9f3be344e53a31ac9'})
   }
 
   return (

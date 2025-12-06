@@ -3,13 +3,13 @@ import ChatLayout from '@/components/chat-layout'
 import MessageForm from '@/components/message-form'
 import React, { useEffect, useState, useContext } from 'react'
 import { io } from 'socket.io-client'
-import { UserContext } from '@/components/user-provider'
+import { AuthContext } from '@/context/AuthProvider' 
 import { useParams } from 'react-router-dom'
 
 const socket = io('http://localhost:3000')
 
 const Chat = ({children}) => {
-  const {userData, setUserData} = useContext(UserContext)
+  const {userData, setUserData} = useContext(AuthContext)
   const [message, setMessage] = useState()
   const { userId } = useParams()
   console.log(userId)
@@ -24,7 +24,6 @@ const Chat = ({children}) => {
     socket.on('message', (data) => {
       setMessage(data)
     })
-
 
   }, [userData])
 

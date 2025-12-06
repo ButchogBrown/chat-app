@@ -23,13 +23,12 @@ export function AppSidebar() {
   const [onlineUsers, setOnlineUsers] = useState({})
   useEffect(() => {
     socket.on('online users', (users) => {
-      setOnlineUsers('HI ')
+      setOnlineUsers(users)
     })
   }, [])
-    useEffect(() => {
-      console.log(onlineUsers)
-  }, [onlineUsers])
-
+  useEffect(() => {
+    console.log('hello from socket provider', onlineUsers)
+  })
   return (
     <Sidebar>
       <SidebarContent>

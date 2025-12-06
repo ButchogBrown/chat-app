@@ -21,11 +21,11 @@ const login = () => {
     try {
       const res = await axios.post(
          "http://localhost:3000/api/v1/auth/login",
-         formData
+         formData, {withCredentials:true}
       )
-      localStorage.setItem("token", res.data.token)
-      navigate("/chat")
-      console.log(res.data)
+      localStorage.setItem("token", res.data.user)
+      navigate("/home")
+      console.log(localStorage.getItem('token'))
 
     }catch(error) {
       setError(error.response.data.message)

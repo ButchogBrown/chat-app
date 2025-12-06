@@ -7,6 +7,7 @@ import Chat from './pages/chat/Chat';
 import UserProvider from './components/user-provider';
 import Default from './pages/chat/Default';
 import SocketProvider from './components/socket-provider';
+import AuthProvider from './context/AuthProvider';
 
 function App() {
 
@@ -16,18 +17,18 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={
-          <UserProvider>
+          <AuthProvider>
             <SocketProvider>
               <Default />
             </SocketProvider>
-          </UserProvider>
+          </AuthProvider>
           }/>
         <Route path='/chat/:userId' element={
-          <UserProvider>
+          <AuthProvider>
             <SocketProvider>
               <Chat />
             </SocketProvider>
-          </UserProvider>
+          </AuthProvider>
           } />
       </Routes>
     </BrowserRouter>

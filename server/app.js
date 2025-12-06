@@ -1,5 +1,6 @@
 require('dotenv').config()
 const { Socket } = require('socket.io')
+const cookieParser = require('cookie-parser')
 const express = require('express')
 
 const http = require('http')
@@ -9,21 +10,24 @@ const cors = require('cors')
 const {connectDB} = require('./db/connect') 
 const {notFound} = require('./middleware/not-found')
 const authRoute = require('./route/auth')
+const chat = require('./route/chat')
 const errorHandlerMiddleware = require('./middleware/error-handler')
+const authenticationMiddleware  = require('./middleware/auth')
 
 const app = express()
 const server = require('http').createServer(app)
 const io = require('socket.io')(server, {cors: {origin: "*"}})
 
+app.use(cookieParser())
 const users = {}
 io.on('connection', (socket) => {
     socket.on('join', ({userData}) => {
-        users[userData.userId] = {
-            userId: userData.userId,
-            userName: userData.userName
+        users[userData._id] = {
+            userId: userData._id,
+            userName: userData.name
         }
         io.emit('online users', users)
-        console.log(users)
+        console.log( users)
     })
     socket.on('private message', ({content, to}) => {
         const recipientSocketId = users[to]
@@ -50,10 +54,14 @@ io.on('connection', (socket) => {
 })
 app.use(express.json())
 app.use(cors({
-    origin: "http://localhost:5173"
+    origin: "http://localhost:5173",
+    credentials: true
 }))
+app.get('/', authenticationMiddleware, (req, res) => {
+    res.json({user: req.user})
+})
 app.use('/api/v1/auth', authRoute)
-
+app.use('/api/v1/chat', chat)
 app.use(errorHandlerMiddleware)
 app.use(notFound)
 const start = async() => {

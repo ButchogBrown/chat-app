@@ -11,24 +11,31 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Input } from "./ui/input"
-import React, { useEffect, useState} from "react"
+import React, { useContext, useEffect, useState} from "react"
 import { Link } from "react-router-dom"
-
-const socket = io('http://localhost:3000')
+import { OnlineUserContext } from "@/context/OnlineUserProvider"
+import { AuthContext } from "@/context/AuthProvider"
 
 
 // Menu items.
 
 export function AppSidebar() {
-  const [onlineUsers, setOnlineUsers] = useState({})
+  const {onlineUsers, setOnlineUsers} = useContext(OnlineUserContext)
+  const {userData} = useContext(AuthContext)
+  const [otherOnlineUser, setOtherOnlineUser] = useState({})
+  const temp = onlineUsers
+
   useEffect(() => {
-    socket.on('online users', (users) => {
-      setOnlineUsers(users)
-    })
-  }, [])
-  useEffect(() => {
-    console.log('hello from socket provider', onlineUsers)
-  })
+    const otherUser = Object.values(onlineUsers).filter( user => user.userId !== userData.user._id).reduce((acc, user) => {
+      acc[user.userId] = {...user}
+      return acc
+    }, {})
+    setOtherOnlineUser(otherUser)
+    
+  }, [onlineUsers, userData])
+  useEffect(()=>{
+    console.log(otherOnlineUser)
+  }, [otherOnlineUser])
   return (
     <Sidebar>
       <SidebarContent>
@@ -58,16 +65,17 @@ export function AppSidebar() {
                   />
                 </div>
               </div>
-              {Object.values(onlineUsers).map((user) => (
+              {Object.values(otherOnlineUser).map((user) => (
                 <SidebarMenuItem key={user.userId}>
                   <SidebarMenuButton asChild>
-                    <Link to={`/chat/${user.userId}`} className="flex items-center mb-2 bg-gray-100 rounded h-24 justify-between">
+                    <Link to={`/chat/${user.userId}`} className="flex items-center mb-2 bg-gray-100 rounded h-auto justify-between">
                       <div className="flex gap-2 items-center">
                         <div className="bg-blue-400 rounded-full p-1 flex items-center ">
                           <Inbox className="text-white" size={24} />
                         </div>
                         <div>
                           <span className="font-medium">{user.userName}</span>
+                          <p>{`userid: ${user.userId} socketId: ${user.userSocketId}, username: ${user.userName}`}</p>
                           <p className="text-gray-500">Hey! How are you doing?</p>
                         </div>
                       </div>

@@ -18,17 +18,18 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={
           <AuthProvider>
-            <SocketProvider>
-              <Default />
-            </SocketProvider>
+              <SocketProvider>
+                <Default />
+              </SocketProvider>
           </AuthProvider>
           }/>
         <Route path='/chat/:userId' element={
           <AuthProvider>
             <SocketProvider>
-              <Chat />
-            </SocketProvider>
+                <Chat />
+              </SocketProvider>
           </AuthProvider>
+
           } />
       </Routes>
     </BrowserRouter>

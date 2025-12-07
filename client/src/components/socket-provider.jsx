@@ -1,20 +1,35 @@
-import React, { createContext, useContext, useEffect } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
 import { AuthContext } from '@/context/AuthProvider'
+import { X } from 'lucide-react'
 
 export const SocketContext = createContext()
 
-const socket = io('http://localhost:3000')
-
 function SocketProvider({ children }) {
 	const {userData, setUserData} = useContext(AuthContext)
-	useEffect(() => {
-		socket.on('connection')
-		if(userData) {
-			socket.emit('join', {userData: userData.user})
-		}
-	}, [userData])
+	const [socket, setSocket] = useState(null)
 
+	useEffect(() => {
+		const newSocket = io('http://localhost:3000', {
+			withCredentials: true
+		})
+
+		setSocket(newSocket)
+		return () =>{
+			newSocket.disconnect()
+		}
+	}, [])
+	useEffect(() => {
+
+		if(socket && userData) {
+			socket.on("connect", () => {
+				console.log('sever in connected', socket.id)
+				socket.emit('join', {userData: userData.user})
+			})
+			
+		}
+		
+	}, [socket, userData])
   return (
     <SocketContext.Provider value={socket}>
         {children}

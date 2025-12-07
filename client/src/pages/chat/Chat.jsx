@@ -2,23 +2,20 @@
 import ChatLayout from '@/components/chat-layout'
 import MessageForm from '@/components/message-form'
 import React, { useEffect, useState, useContext } from 'react'
-import { io } from 'socket.io-client'
 import { AuthContext } from '@/context/AuthProvider' 
 import { useParams } from 'react-router-dom'
+import { SocketContext } from '@/components/socket-provider'
 
-const socket = io('http://localhost:3000')
 
-const Chat = ({children}) => {
+const Chat = ({children }) => {
   const {userData, setUserData} = useContext(AuthContext)
   const [message, setMessage] = useState()
   const { userId } = useParams()
-  console.log(userId)
+  const socket = useContext(SocketContext)
 
   useEffect(() => {
     if(!userData) return;
-    
     socket.on('private message', (data) => {
-      console.log('irene')
       setMessage(data) //set the display data to be this value
     })  
     socket.on('message', (data) => {
@@ -26,13 +23,18 @@ const Chat = ({children}) => {
     })
 
   }, [userData])
-
+  useEffect(() => {
+    console.log(socket)
+  }, [socket])
   const sendMessage = (sendMessage) => {
-    socket.emit('private message',{content: sendMessage, to: '692967c9f3be344e53a31ac9'})
+    console.log('socket from server: ', socket.id)
+    socket.emit('private message',{content: sendMessage, to: userId})
   }
 
   return (
+
     <ChatLayout>
+      
       <div className='flex flex-col justify-between items-start flex-1 '>
         <section className='w-full flex flex-col'>
           {message && 

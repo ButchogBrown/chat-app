@@ -16,7 +16,17 @@ const authenticationMiddleware  = require('./middleware/auth')
 
 const app = express()
 const server = require('http').createServer(app)
-const io = require('socket.io')(server, {cors: {origin: "*"}})
+const io = require('socket.io')(server, {cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true
+}})
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true
+}))
 
 app.use(cookieParser())
 const users = {}
@@ -24,16 +34,16 @@ io.on('connection', (socket) => {
     socket.on('join', ({userData}) => {
         users[userData._id] = {
             userId: userData._id,
-            userName: userData.name
+            userName: userData.name,
+            userSocketId: socket.id
         }
         io.emit('online users', users)
-        console.log( users)
+       console.log('login userssdfsdfsdfsdfdsdfdsdff' ,users)
     })
     socket.on('private message', ({content, to}) => {
         const recipientSocketId = users[to]
-    
         if(recipientSocketId) {
-            io.to(recipientSocketId).emit('private message', {
+            io.to(recipientSocketId.userSocketId).emit('private message', {
                 content: content,
                 date: new Date().toLocaleDateString()
             })
@@ -50,13 +60,9 @@ io.on('connection', (socket) => {
         }
         socket.emit('message', message)
     })
-
 })
 app.use(express.json())
-app.use(cors({
-    origin: "http://localhost:5173",
-    credentials: true
-}))
+
 app.get('/', authenticationMiddleware, (req, res) => {
     res.json({user: req.user})
 })

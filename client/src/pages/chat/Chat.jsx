@@ -2,40 +2,37 @@
 import ChatLayout from '@/components/chat-layout'
 import MessageForm from '@/components/message-form'
 import React, { useEffect, useState, useContext } from 'react'
-import { io } from 'socket.io-client'
-import { UserContext } from '@/components/user-provider'
+import { useParams } from 'react-router-dom'
+import { SocketContext } from '@/context/SocketProvider'
+import { AuthContext } from '@/context/AuthProvider'
 
-const socket = io('http://localhost:3000')
-
-const Chat = ({children}) => {
-  const {userData, setUserData} = useContext(UserContext)
-  console.log(userData)
-  const [message, setMessage] = useState()
-  //userId needs to be dynamic
+const Chat = ({children }) => {
+  const socket = useContext(SocketContext)
+  const {userData, setUserData} = useContext(AuthContext)
+  const [message, setMessage] = useState({})
+  const { userId } = useParams()
   useEffect(() => {
-    socket.on('connection')
-    socket.emit('join', {userId: 'chug'}) //make it dynamic later on
-    socket.on('private message', (data) => {
-      setMessage(data) //set the display data to be this value
-    })  
-    socket.on('message', (data) => {
-      setMessage(data)
-    })
+    if(socket) {
+      socket.on('private message', (data) => {
+        setMessage(data)
+        console.log(data)
+        console.log('your chatting with ', userId)
+      })
+    }
 
-    socket.on('online users', (users) => {
-      console.log(users)
-    })
-  }, [])
 
+  }, [socket, userData])
   const sendMessage = (sendMessage) => {
-    socket.emit('private message',{content: sendMessage, to: 'chug'})
+    socket.emit('private message',{content: sendMessage, to: userId, from: userData._id})
+    
   }
-
   return (
+
     <ChatLayout>
+      
       <div className='flex flex-col justify-between items-start flex-1 '>
         <section className='w-full flex flex-col'>
-          {message && 
+          {message && message.from === userId && 
             <ul className='w-96 self-end mt-7 space-y-2'>
               <li className='bg-blue-600 text-white rounded-t-2xl rounded-bl-2xl border p-4'>
                 <p>{message.content}</p>

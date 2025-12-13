@@ -7,8 +7,9 @@ function UserProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem('token')
     if(token) {
-      const decoded = jwtDecode(token)
-      setUserData({userId: decoded.userId})
+      console.log(token)
+      // const decoded = jwtDecode(token)
+      // setUserData({userId: decoded.userId, userName: decoded.userName})
     }
   }, [])
   return ( 

@@ -38,9 +38,13 @@ exports.login = async (req,res, next) => {
             throw new BadRequestError("Invalid email or password")
         }
         
-        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: '1h'})
+        const token = jwt.sign({userId: user._id, userName: user.name}, process.env.JWT_SECRET, {expiresIn: '24h'})
+        return res.cookie("access_token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production"
+        }).status(200).json({ user })
 
-        res.status(200).json({token, user})
+        // res.status(200).json({token})
     }catch(error) {
         console.log(error)
         next(error)

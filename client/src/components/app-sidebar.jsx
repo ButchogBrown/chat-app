@@ -1,5 +1,5 @@
 import { Calendar, Home, Inbox, Search, Settings, MessageCircle } from "lucide-react"
-
+import { io } from "socket.io-client"
 import {
   Sidebar,
   SidebarContent,
@@ -11,37 +11,15 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Input } from "./ui/input"
+import React, { useContext, useEffect, useState} from "react"
+import { Link, useLocation } from "react-router-dom"
+import { OnlineUserContext } from "@/context/OnlineUserProvider"
 
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-]
 
 export function AppSidebar() {
+  const location = useLocation()
+  const {onlineUsers, setOnlineUsers} = useContext(OnlineUserContext)
+  
   return (
     <Sidebar>
       <SidebarContent>
@@ -71,22 +49,25 @@ export function AppSidebar() {
                   />
                 </div>
               </div>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              {onlineUsers &&  Object.values(onlineUsers).map((user) => (
+                <SidebarMenuItem key={user.userId}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url} className="flex items-center mb-2 bg-gray-100 rounded h-24 justify-between">
+                    <Link to={`/chat/${user.userId}`} className={`flex items-center mb-2 rounded h-auto justify-between ${
+                        location.pathname === `/chat/${user.userId}` ? "bg-blue-200" : "bg-gray-100"
+                      }`}>
                       <div className="flex gap-2 items-center">
                         <div className="bg-blue-400 rounded-full p-1 flex items-center ">
-                          <item.icon className="text-white" size={24} />
+                          <Inbox className="text-white" size={24} />
                         </div>
                         <div>
-                          <span className="font-medium">{item.title}</span>
+                          <span className="font-medium">{user.userName}</span>
+                          <p>{`userid: ${user.userId} socketId: ${user.userSocketId}, username: ${user.userName}`}</p>
                           <p className="text-gray-500">Hey! How are you doing?</p>
                         </div>
                       </div>
 
                       <p className="items-end text-gray-500">2m ago</p>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

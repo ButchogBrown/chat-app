@@ -4,7 +4,7 @@ import './App.css'
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Chat from './pages/chat/Chat';
-import UserProvider from './components/user-provider';
+import Default from './pages/chat/Default';
 
 function App() {
 
@@ -13,11 +13,11 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
-        <Route path='/chat' element={
-          <UserProvider>
-            <Chat />
-          </UserProvider>
+        <Route path="/home" element={
+                <Default />
+          }/>
+        <Route path='/chat/:userId' element={
+                <Chat />
           } />
       </Routes>
     </BrowserRouter>

@@ -50,3 +50,13 @@ exports.login = async (req,res, next) => {
         next(error)
     }    
 }
+
+exports.logout = (req, res) => {
+    res.cookie("token", "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV = "production",
+        expiresIn: new Date(0)
+    })
+
+    res.status(200).json({message: "Successfully logout!"})
+}

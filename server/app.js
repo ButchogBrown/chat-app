@@ -13,6 +13,7 @@ const authRoute = require('./route/auth')
 const chat = require('./route/chat')
 const errorHandlerMiddleware = require('./middleware/error-handler')
 const authenticationMiddleware  = require('./middleware/auth')
+const { savePrivateMessage } = require('./controller/MessageController')
 const { connected } = require('process')
 
 const app = express()
@@ -36,8 +37,13 @@ app.use(express.json())
 app.get('/', authenticationMiddleware, (req, res) => {
     res.json({user: req.user})
 })
+app.use('/api/v1/chat', (req, res, next) => {
+    res.set('Cache-Control', 'no-store')
+    next()
+})
 app.use('/api/v1/auth', authRoute)
 app.use('/api/v1/chat', chat)
+
 
 const users = {}
 
@@ -50,22 +56,18 @@ io.on("connection", (socket) => {
             userId: userData._id,
             userName: userData.name
         }
-        console.log(users)
         io.emit('online_users', {...users})
     })
-    socket.on('private message', ({content, to , from}) => {
+    socket.on('private message', async ({content, to , from}) => {
         const recipient = users[to]
-        console.log(from)
         if(!recipient) return 
-        
-        io.to(recipient.socketId).emit('private message', {
-            date: new Date(),
-            content,
-            from: from
-        })
+        const saveMessage = await savePrivateMessage({content, to, from})
+        io.to(recipient.socketId).emit('private message', saveMessage)
+        socket.emit('private message', saveMessage)
     })
     
 })
+
 app.use(errorHandlerMiddleware)
 app.use(notFound)
 const start = async() => {

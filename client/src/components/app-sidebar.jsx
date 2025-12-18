@@ -19,7 +19,9 @@ import { OnlineUserContext } from "@/context/OnlineUserProvider"
 export function AppSidebar() {
   const location = useLocation()
   const {onlineUsers, setOnlineUsers} = useContext(OnlineUserContext)
-  
+  useEffect(() => {
+    console.log("onlineUsers ",onlineUsers)
+  }, [onlineUsers])
   return (
     <Sidebar>
       <SidebarContent>
@@ -49,19 +51,18 @@ export function AppSidebar() {
                   />
                 </div>
               </div>
-              {onlineUsers &&  Object.values(onlineUsers).map((user) => (
-                <SidebarMenuItem key={user.userId}>
+              {onlineUsers &&  onlineUsers.map((user) => (
+                <SidebarMenuItem key={user._id}>
                   <SidebarMenuButton asChild>
-                    <Link to={`/chat/${user.userId}`} className={`flex items-center mb-2 rounded h-auto justify-between ${
-                        location.pathname === `/chat/${user.userId}` ? "bg-blue-200" : "bg-gray-100"
+                    <Link to={`/chat/${user._id}`} className={`flex items-center mb-2 rounded h-auto justify-between hover:bg-blue-300 transition duration-300 ${
+                        location.pathname === `/chat/${user._id}` ? "bg-blue-200" : "bg-gray-100"
                       }`}>
                       <div className="flex gap-2 items-center">
                         <div className="bg-blue-400 rounded-full p-1 flex items-center ">
                           <Inbox className="text-white" size={24} />
                         </div>
                         <div>
-                          <span className="font-medium">{user.userName}</span>
-                          <p>{`userid: ${user.userId} socketId: ${user.userSocketId}, username: ${user.userName}`}</p>
+                          <span className="font-medium">{user.name}</span>
                           <p className="text-gray-500">Hey! How are you doing?</p>
                         </div>
                       </div>

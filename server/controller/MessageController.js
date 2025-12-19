@@ -30,7 +30,7 @@ exports.fetchMessages = async(req, res, next) => {
     }
 }
 
-exports.fetchRecentChat = async (req, res) => {
+exports.fetchRecentChat = async (req, res, next) => {
     try {
         const {userId} = req.user
         const message = await Message.find({
@@ -50,6 +50,7 @@ exports.fetchRecentChat = async (req, res) => {
         return res.status(200).json(users)
     }catch(error) {
         console.log(error)
+        next(error)
     }
 
 }

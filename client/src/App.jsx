@@ -5,20 +5,25 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Chat from './pages/chat/Chat';
 import Default from './pages/chat/Default';
+import AuthRoute from './components/AuthRoute';
 
 function App() {
 
   return (
     <BrowserRouter>
+      
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={
-                <Default />
-          }/>
+          <AuthRoute>
+            <Default />
+          </AuthRoute>
+
+        }/>
         <Route path='/chat/:userId' element={
-                <Chat />
-          } />
+          <Chat />
+        }/>
       </Routes>
     </BrowserRouter>
   )

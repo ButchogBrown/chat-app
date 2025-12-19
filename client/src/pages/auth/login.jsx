@@ -1,21 +1,27 @@
-import {React, useState} from 'react'
+import {React, useContext, useEffect, useState} from 'react'
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import Link from "../../components/custom/Link";
 import { Checkbox } from '@/components/ui/checkbox';
 import { CircleX } from 'lucide-react';
-import { useNavigate } from 'react-router-dom'
+import { replace, useNavigate } from 'react-router-dom'
 import axios from 'axios';
+import { AuthContext } from '@/context/AuthProvider';
 
 const login = () => {
+  const {userData, setUserdata} = useContext(AuthContext)
   const navigate = useNavigate()
   const [error, setError] = useState("")
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   })
-
+  useEffect(() => {
+    if(userData?._id) {
+      navigate("/home", {replace: true})
+    }
+  }, [userData])
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -23,9 +29,7 @@ const login = () => {
          "http://localhost:3000/api/v1/auth/login",
          formData, {withCredentials:true}
       )
-      localStorage.setItem("token", res.data.user)
       navigate("/home")
-      console.log(localStorage.getItem('token'))
 
     }catch(error) {
       setError(error.response.data.message)

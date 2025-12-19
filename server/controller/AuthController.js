@@ -52,12 +52,14 @@ exports.login = async (req,res, next) => {
 }
 
 exports.logout = (req, res) => {
-    
-    res.cookie("token", "", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV = "production",
-        expiresIn: new Date(0)
-    })
+    res.clearCookie("access_token")
+    // res.cookie("token", "", {
+    //     httpOnly: true,
+    //      secure: process.env.NODE_ENV === "production",
+    //     sameSite: "strict",
+    //      path: "/",          // important! must match original cookie path
+    //     expires: new Date(0) // delete the cookie
+    // });
 
-    res.status(200).json({message: "Successfully logout!"})
+    res.status(200).json({ message: "Successfully logged out!" });
 }

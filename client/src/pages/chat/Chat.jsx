@@ -6,11 +6,16 @@ import { useParams } from 'react-router-dom'
 import { SocketContext } from '@/context/SocketProvider'
 import { AuthContext } from '@/context/AuthProvider'
 import axios from 'axios'
+import { OnlineUserContext } from '@/context/OnlineUserProvider'
 
 const Chat = ({children }) => {
   const socket = useContext(SocketContext)
   const {userData, setUserData} = useContext(AuthContext)
+  const {currentOnlineUser} = useContext(OnlineUserContext)
+
   const [message, setMessage] = useState([])
+  const [latestMessage, setLatestMessage] = useState()
+
   const { userId } = useParams()
   const chatEndRef = useRef(null)
   useEffect(() => {
@@ -31,6 +36,12 @@ const Chat = ({children }) => {
     socket.emit('private message',{content: sendMessage, to: userId, from: userData._id})
   }
 
+  const showStatus = (msg) => {
+    if(!latestMessage || !Object.keys(latestMessage).length ) return false
+    console.log(msg)
+    return msg._id === latestMessage._id && msg.senderId === userData._id
+  }
+
   const fetchMessages = async (userId) => {
     try {
       const res = await axios.get(`http://localhost:3000/api/v1/chat/${userId}`, {
@@ -44,7 +55,7 @@ const Chat = ({children }) => {
   }
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({behavior: "smooth"})
-  
+    setLatestMessage(message[message.length - 1])
   }, [message])
   return (
 
@@ -58,7 +69,9 @@ const Chat = ({children }) => {
                   <p>{msg.content}</p>
                   <span className='text-white/70'>{msg.createdAt}</span>
                 </div>
+                {showStatus(msg) && <p>{msg.isSeen}</p>}
             </div>
+
           ))}
         </section >
         <section className='bg-yellow-50 w-full border-t border-gray-300 h-20 flex flex-col justify-center p-2' ref={chatEndRef}>

@@ -14,8 +14,9 @@ const MessageSchema = new mongoose.Schema({
         required: [true, "Content is required."]
     },
     isSeen: {
-        type: Boolean,
-        default: false
+        type: String,
+        enum: ["sent", "delivered", "seen"],
+        default: "sent"
     },
 }, { timestamps: true });
 

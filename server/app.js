@@ -60,8 +60,13 @@ io.on("connection", (socket) => {
     })
     socket.on('private message', async ({content, to , from}) => {
         const recipient = users[to]
-        if(!recipient) return 
-        const saveMessage = await savePrivateMessage({content, to, from})
+        console.log("current recipient: ",recipient)
+        if(!recipient) {
+            const saveMessage = await savePrivateMessage({content, to, from, isOnline: "sent"})
+            socket.emit('private message', saveMessage)
+            return
+        } 
+        const saveMessage = await savePrivateMessage({content, to, from, isOnline: "delivered"})
         io.to(recipient.socketId).emit('private message', saveMessage)
         socket.emit('private message', saveMessage)
     })

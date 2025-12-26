@@ -8,22 +8,27 @@ function OnlineUserProvider({children}) {
   const {userData, setUserData} = useContext(AuthContext)
   const socket = useContext(SocketContext)
   const [onlineUsers, setOnlineUsers] = useState([])
-  
+  const [currentOnlineUser, setCurrentOnlineUser] = useState({})
   useEffect(() => {
+    if(!userData) return  
     if (socket && userData._id) {
       socket.on("online_users", async (data) => {
         // const filterUser = Object.fromEntries(Object.entries(data).filter(([key, user]) => key != userData._id ))
-        // setOnlineUsers(filterUser)
+      
+        setCurrentOnlineUser(data)
         const res = await getRecentChat()
         setOnlineUsers(res)
       })
     }
   }, [socket, userData])
+
+
   const getRecentChat = async () => {
     try {
       const res = await axios.get('http://localhost:3000/api/v1/chat/recent', {
         withCredentials: true
       })
+      
       return res.data
     }catch(error) {
       console.log(error)
@@ -31,7 +36,7 @@ function OnlineUserProvider({children}) {
   }
 
   return (
-    <OnlineUserContext.Provider value={{ onlineUsers, setOnlineUsers }}>
+    <OnlineUserContext.Provider value={{ onlineUsers, setOnlineUsers, currentOnlineUser }}>
       {children}
     </OnlineUserContext.Provider>
   )

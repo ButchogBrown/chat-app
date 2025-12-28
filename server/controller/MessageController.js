@@ -2,7 +2,7 @@ const Message = require('../models/Message')
 const User = require('../models/User')
 
 exports.savePrivateMessage = async ({content, to, from, isOnline}) => {
-    console.log("this is online indicator: ",isOnline)
+ 
     const message = await Message.create({
         senderId: from,
         receiverId: to,
@@ -15,23 +15,22 @@ exports.savePrivateMessage = async ({content, to, from, isOnline}) => {
 exports.fetchMessages = async(req, res, next) => {
     try {
         const { userId } = req.params
-        updateIsSeen(userId, req.user.userId)
+        const result = await updateIsSeen(userId, req.user.userId)
         const messages = await Message.find({
             $or: [
                 { senderId: userId, receiverId: req.user.userId },
                 { receiverId: userId, senderId: req.user.userId }
             ]
         }).sort({createdAt: 1})
-
         // if(!messages.length) res.status(400).json({message: "No message"})
-        return res.status(200).json(messages)
+        return res.status(200).json({messages, result})
         
     }catch(error) {
         next(error)
     }
 }
 const updateIsSeen = async (senderId, receiverId) => {
-    await Message.updateMany(
+    const result = await Message.updateMany(
         {
             senderId: senderId,
             receiverId: receiverId,
@@ -41,6 +40,7 @@ const updateIsSeen = async (senderId, receiverId) => {
             $set: {isSeen: "seen"}
         }
     )
+    return result;
 }
 
 exports.fetchRecentChat = async (req, res, next) => {

@@ -60,7 +60,7 @@ io.on("connection", (socket) => {
     })
     socket.on('private message', async ({content, to , from}) => {
         const recipient = users[to]
-        console.log("current recipient: ",recipient)
+
         if(!recipient) {
             const saveMessage = await savePrivateMessage({content, to, from, isOnline: "sent"})
             socket.emit('private message', saveMessage)
@@ -69,6 +69,11 @@ io.on("connection", (socket) => {
         const saveMessage = await savePrivateMessage({content, to, from, isOnline: "delivered"})
         io.to(recipient.socketId).emit('private message', saveMessage)
         socket.emit('private message', saveMessage)
+    })
+
+    socket.on("read receipt", (data) => {
+        const sender = users[data.senderId]
+        io.to(sender.socketId).emit("read receipt", data)
     })
     
 })

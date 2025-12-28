@@ -24,6 +24,7 @@ const Chat = ({children }) => {
       socket.on('private message', (data) => {
         // setMessage(data)
         setMessage(prev => {
+          // if(data.onSend !== userId && data.receiverId !== userId ) return prev
           if (prev.some(msg => msg._id === data._id)) return prev
           return [...prev, data]
         })
@@ -38,32 +39,57 @@ const Chat = ({children }) => {
 
   const showStatus = (msg) => {
     if(!latestMessage || !Object.keys(latestMessage).length ) return false
-    console.log(msg)
+   
     return msg._id === latestMessage._id && msg.senderId === userData._id
   }
 
-  const fetchMessages = async (userId) => {
-    try {
-      const res = await axios.get(`http://localhost:3000/api/v1/chat/${userId}`, {
-        withCredentials: true
-      })
-      setMessage(res.data)
-    }catch(error) {
-      console.log(error)
+    const fetchMessages = async (userId) => {
+      try {
+        const res = await axios.get(`http://localhost:3000/api/v1/chat/${userId}`, {
+          withCredentials: true
+        })
+
+        setMessage(res.data.messages)
+        if(res.data.result.modifiedCount > 0) {
+          socket.emit("read receipt", res.data.messages[res.data.messages.length - 1])
+        }
+       
+
+      }catch(error) {
+        console.log(error)
+      }
+
     }
 
-  }
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({behavior: "smooth"})
     setLatestMessage(message[message.length - 1])
+    if(message.length){
+      socket.on("read receipt", (data) => {
+        if(message[message.length - 1]._id === data._id) {
+          setMessage(prev => {
+            const lastIndex = prev.length - 1
+            const lstMsg = prev[lastIndex]
+
+            const newMessages = [...prev]
+            newMessages[lastIndex] = {...lstMsg, isSeen: "seen"}
+
+            return newMessages
+          })
+        }
+      })
+    }
   }, [message])
+  
   return (
 
     <ChatLayout>
       
       <div className='flex flex-col justify-between items-start flex-1 '>
         <section className='w-full flex flex-col'>
-          {message.map(msg => (
+          {message.filter(msg => 
+            (msg.senderId === userId && msg.receiverId === userData._id) || (msg.senderId === userData._id && msg.receiverId === userId)
+          ).map(msg => (
             <div key={msg._id} className={`w-96 mt-7 space-y-2 bg self-end ${msg.senderId === userId ? "mr-auto" : "ml-auto" } ml-5 mr-5`}>
                 <div key={msg._id} className={`${msg.senderId === userId ? " rounded-t-2xl rounded-br-2xl" : " rounded-t-2xl rounded-bl-2xl "} bg-blue-600 text-white border p-4`} >
                   <p>{msg.content}</p>

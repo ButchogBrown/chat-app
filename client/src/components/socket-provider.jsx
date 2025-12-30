@@ -10,6 +10,10 @@ function SocketProvider({ children }) {
 	const [socket, setSocket] = useState(null)
 
 	useEffect(() => {
+		console.log('from socket provider')
+		if(!userData) return
+
+		console.log("hello from hell")
 		const newSocket = io('http://localhost:3000', {
 			withCredentials: true
 		})
@@ -19,17 +23,23 @@ function SocketProvider({ children }) {
 			newSocket.disconnect()
 		}
 	}, [])
-	useEffect(() => {
+	// useEffect(() => {
+	// 	if(!socket || !userData) return
 
-		if(socket && userData) {
-			socket.on("connect", () => {
-				console.log('sever in connected', socket.id)
-				socket.emit('join', {userData: userData.user})
-			})
-			
-		}
-		
-	}, [socket, userData])
+	// 	const joinServer = () => {
+	// 		console.log('sever in connected', socket.id)
+	// 		socket.emit('join', {userData: userData.user})
+	// 	}
+	// 	if(socket.connected) {
+	// 		joinServer()
+	// 	} else {
+	// 		socket.once('connect', joinServer)
+	// 	}
+	// 	return () => {
+	// 		socket.off("connect", joinServer);
+	// 	};
+	// }, [socket, userData])
+	
   return (
     <SocketContext.Provider value={socket}>
         {children}

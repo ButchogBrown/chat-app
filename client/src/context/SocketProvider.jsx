@@ -8,21 +8,23 @@ function SocketProvider({ children }) {
   const { userData, setUserData } = useContext(AuthContext)
 
     useEffect(() => {
+      if(!userData) return
+      console.log("hello from hell")
       const temp = io("http://localhost:3000", {
         withCredentials: true
       });
       setSocket(temp)
-      
+      temp.emit("connected_user", {userData})
       return () =>{
         temp.disconnect()
       }
-    }, [])
+    }, [userData])
 
-    useEffect(() => {
-      if(socket && userData?._id) {
-        socket.emit("connected_user", {userData})
-      }
-    }, [socket, userData])
+    // useEffect(() => {
+    //   if(socket && userData?._id) {
+    //     socket.emit("connected_user", {userData})
+    //   }
+    // }, [socket, userData])
 
   return (
     <SocketContext.Provider value={socket}>

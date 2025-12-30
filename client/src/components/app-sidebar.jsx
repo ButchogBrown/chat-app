@@ -21,8 +21,8 @@ export function AppSidebar() {
   const navigate =useNavigate()
   const location = useLocation()
   const {onlineUsers, setOnlineUsers, currentOnlineUser} = useContext(OnlineUserContext)
-  const [offlineUser, setOfflineUser] = useState()
-  const [filteredOnlineUser, setFilteredOnlineUser] = useState()
+  const [offlineUser, setOfflineUser] = useState([])
+  const [filteredOnlineUser, setFilteredOnlineUser] = useState({})
   const {userData} = useContext(AuthContext)
 
 
@@ -33,13 +33,17 @@ export function AppSidebar() {
     ) 
     const filteredOnlineUser = Object.fromEntries(
       Object.entries(currentOnlineUser).filter(
-        ([key, user]) => key !== userData._id
+        ([key, user]) => key && key !== userData._id
       )
     );
     setOfflineUser(offlineUser)
     setFilteredOnlineUser(filteredOnlineUser)
     
   }, [onlineUsers, currentOnlineUser, userData])
+
+  useEffect(() => {
+    console.log(filteredOnlineUser)
+  },[filteredOnlineUser])
 
   return (
     <Sidebar>
@@ -73,7 +77,7 @@ export function AppSidebar() {
                 </div>
               </div>
               <p className="pl-3  text-base text-gray-500 pb-2">Online</p>
-              {filteredOnlineUser &&  Object.values(filteredOnlineUser).map((user) => (
+              {!filteredOnlineUser[undefined] &&  Object.values(filteredOnlineUser || {}).map((user) => (
                 <SidebarMenuItem key={user.userId}>
                   <SidebarMenuButton asChild>
                     <Link to={`/chat/${user.userId}`} className={`flex items-center mb-2 rounded-2xl  h-auto justify-between hover:bg-blue-500 transition duration-300 ${
@@ -91,8 +95,7 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-
-
+              
               <p className="pl-3  text-base text-gray-500 pb-2 pt-5">Offline</p>
               {offlineUser &&  offlineUser.map((user) => (
                 <SidebarMenuItem key={user._id}>

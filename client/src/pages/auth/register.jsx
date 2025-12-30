@@ -1,4 +1,4 @@
-import { React, useState } from 'react'
+import { React, useContext, useState } from 'react'
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
@@ -6,12 +6,16 @@ import Link from "../../components/custom/Link";
 import { Checkbox } from '@/components/ui/checkbox';
 import axios from 'axios';
 import { CircleX } from 'lucide-react';
+import { AuthContext } from '@/context/AuthProvider';
+import { replace, useNavigate } from 'react-router-dom';
 
 const register = () => {
+  const navigate = useNavigate()  
+  const { refetchUser } = useContext(AuthContext)
   const [error, setError] = useState()
   const [formData, setFormData] = useState({
-    name: "John Doe",
-    email: "johndoe@gmail.com",
+    name: "",
+    email: "",
     password: "12345678",
     confirmPassword: "12345678"
   })
@@ -21,10 +25,14 @@ const register = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/v1/auth/register",
-        formData
+        "http://localhost:3000/api/v1/auth/register", formData, {
+          withCredentials: true
+        }
       );
-      console.log(res.data)
+      console.log("this is the data", res.data)
+      await refetchUser()
+      navigate('/home')
+
     }catch (error) {
       setError(error.response.data.message)
 

@@ -45,9 +45,16 @@ app.use('/api/v1/auth', authRoute)
 app.use('/api/v1/chat', chat)
 
 
-const users = {}
+let users = {}
 
 io.on("connection", (socket) => {
+    socket.on('disconnect', () => {
+   
+        users = Object.fromEntries(
+            Object.entries(users).filter(([key, user]) => user.socketId !== socket.id)
+        )
+        io.emit('online_users', {...users})
+    })
     socket.on("connected_user", (data) => {
         const userData = data.userData
 

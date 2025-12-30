@@ -8,6 +8,9 @@ exports.register = async (req,res, next) => {
         const {name, email, password, confirmPassword} = req.body 
         const existingUser = await User.findOne({email})
 
+        if(!name || !email || !password) {
+            throw new BadRequestError('Please provide all values')
+        }
         if(existingUser) {
             throw new BadRequestError('Email is already registered')
         }
@@ -17,8 +20,12 @@ exports.register = async (req,res, next) => {
 
         const user = await User.create({name, email, password})
         const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: '1h'})
-        res.status(201).json({token})
+        return res.cookie('access_token', token ,{
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production"
+        }).status(200).json({user})
     }catch (error) {
+        console.log(error)
         next(error)
     }
 }
@@ -44,7 +51,6 @@ exports.login = async (req,res, next) => {
             secure: process.env.NODE_ENV === "production"
         }).status(200).json({ user })
 
-        // res.status(200).json({token})
     }catch(error) {
         console.log(error)
         next(error)
@@ -53,13 +59,5 @@ exports.login = async (req,res, next) => {
 
 exports.logout = (req, res) => {
     res.clearCookie("access_token")
-    // res.cookie("token", "", {
-    //     httpOnly: true,
-    //      secure: process.env.NODE_ENV === "production",
-    //     sameSite: "strict",
-    //      path: "/",          // important! must match original cookie path
-    //     expires: new Date(0) // delete the cookie
-    // });
-
     res.status(200).json({ message: "Successfully logged out!" });
 }

@@ -10,7 +10,8 @@ import axios from 'axios';
 import { AuthContext } from '@/context/AuthProvider';
 
 const login = () => {
-  const {userData, setUserdata} = useContext(AuthContext)
+  const {userData, setUserData, refetchUser} = useContext(AuthContext)
+  const {isLogin, setIsLogin} = useContext(AuthContext)
   const navigate = useNavigate()
   const [error, setError] = useState("")
   const [formData, setFormData] = useState({
@@ -19,6 +20,7 @@ const login = () => {
   })
   useEffect(() => {
     if(userData?._id) {
+      console.log("youre still log in")
       navigate("/home", {replace: true})
     }
   }, [userData])
@@ -29,9 +31,12 @@ const login = () => {
          "http://localhost:3000/api/v1/auth/login",
          formData, {withCredentials:true}
       )
+      setIsLogin(res.data)
+      await refetchUser()
       navigate("/home")
 
     }catch(error) {
+      console.log(error)
       setError(error.response.data.message)
       
       setTimeout(() => {

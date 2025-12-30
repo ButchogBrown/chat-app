@@ -5,7 +5,8 @@ import { ErrorContext } from './ErrorProvider'
 
 export const AuthContext = createContext()
 function AuthProvider( { children } ) {
-  const [userData, setUserData] = useState({})
+  const [isLogin, setIsLogin] = useState(null)
+  const [userData, setUserData] = useState(null)
   const {serverError, setServerError} = useContext(ErrorContext)
   const fetchData = async () => {
     try {
@@ -15,16 +16,16 @@ function AuthProvider( { children } ) {
       setUserData(res.data.user)
     }catch(error) {
       console.log(error)
-      setServerError(error.response)
+      setServerError(error)
     }
   }
   useEffect(() => {
+    // if(!isLogin) return
     fetchData()
-    
   }, [])
 	
   return (
-    <AuthContext.Provider value={{userData, setUserData}}>
+    <AuthContext.Provider value={{userData, setUserData, isLogin, setIsLogin, refetchUser: fetchData}}>
       {children}
     </AuthContext.Provider>
   )

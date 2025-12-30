@@ -25,8 +25,8 @@ const ChatLayout = ({ children }) => {
   }
   return (
     <SidebarProvider className="flex" >
-          <AppSidebar />
-         <main className='flex flex-col flex-1'>
+        <AppSidebar />
+          <main className='flex flex-col flex-1'>
               <div className='fixed w-full border-b border-gray-300 bg-white flex justify-between items-center z-50'>
                   <SidebarTrigger />
                   <div>

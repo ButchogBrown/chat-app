@@ -19,10 +19,12 @@ function App() {
           <AuthRoute>
             <Default />
           </AuthRoute>
-
         }/>
         <Route path='/chat/:userId' element={
-          <Chat />
+          <AuthRoute>
+            <Chat />
+          </AuthRoute>
+          
         }/>
       </Routes>
     </BrowserRouter>

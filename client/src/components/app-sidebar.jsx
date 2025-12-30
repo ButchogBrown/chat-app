@@ -12,12 +12,13 @@ import {
 } from "@/components/ui/sidebar"
 import { Input } from "./ui/input"
 import React, { useContext, useEffect, useState} from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom"
 import { OnlineUserContext } from "@/context/OnlineUserProvider"
 import { AuthContext } from "@/context/AuthProvider"
 
 
 export function AppSidebar() {
+  const navigate =useNavigate()
   const location = useLocation()
   const {onlineUsers, setOnlineUsers, currentOnlineUser} = useContext(OnlineUserContext)
   const [offlineUser, setOfflineUser] = useState()
@@ -45,12 +46,14 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="mt-8 border-b border-gray-300 pb-8">
-            <div className="mb-3 flex items-center gap-1" > 
-              <div className="bg-blue-600 p-2 rounded-xl inline-flex items-center justify-center ">
-                <MessageCircle className="w-6 h-6 text-white"  />
+            <Link to="/home" >
+              <div className="mb-3 flex items-center gap-1" > 
+                <div className="bg-blue-600 p-2 rounded-xl inline-flex items-center justify-center ">
+                  <MessageCircle className="w-6 h-6 text-white" />
+                </div>
+                <h1>ChatApp</h1>
               </div>
-              <h1>ChatApp</h1>
-            </div>
+            </Link>
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

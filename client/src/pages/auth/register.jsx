@@ -89,7 +89,7 @@ const register = () => {
 
             <div className='flex justify-center items-center mt-5 gap-1'> 
               <p>Don't have an account?</p>
-              <Link href='#'>Sign in</Link>
+              <Link href='/login'>Sign in</Link>
             </div>
           </section>
         </div>

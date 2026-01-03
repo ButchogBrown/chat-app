@@ -38,7 +38,7 @@ const login = () => {
       console.log(error)
       setError(error.response.data.message)
       
-      setTimeout(() => {
+        setTimeout(() => {
         setError("")
       }, 3000);
     }
@@ -83,7 +83,7 @@ const login = () => {
 
             <div className='flex justify-center items-center mt-5 gap-1'> 
               <p>Don't have an account?</p>
-              <Link href='#'>Sign up</Link>
+              <Link href='/register'>Sign up</Link>
             </div>
           </section>
         </div>

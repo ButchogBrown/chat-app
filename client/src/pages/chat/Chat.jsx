@@ -1,7 +1,7 @@
 
 import ChatLayout from '@/components/chat-layout'
 import MessageForm from '@/components/message-form'
-import React, { useEffect, useState, useContext, useRef } from 'react'
+import React, { useEffect, useState, useContext, useRef, useId } from 'react'
 import { useParams } from 'react-router-dom'
 import { SocketContext } from '@/context/SocketProvider'
 import { AuthContext } from '@/context/AuthProvider'
@@ -15,6 +15,8 @@ const Chat = ({children }) => {
 
   const [message, setMessage] = useState([])
   const [latestMessage, setLatestMessage] = useState()
+  const [groupMessage, setGroupMessage] = useState({})
+
 
   const { userId } = useParams()
   const chatEndRef = useRef(null)
@@ -22,46 +24,39 @@ const Chat = ({children }) => {
     if(socket) {
       fetchMessages(userId)
       socket.on('private message', (data) => {
-        // setMessage(data)
         setMessage(prev => {
-          // if(data.onSend !== userId && data.receiverId !== userId ) return prev
           if (prev.some(msg => msg._id === data._id)) return prev
           return [...prev, data]
         })
       })
     }
-
-
   }, [socket, userData, userId])
+
   const sendMessage = (sendMessage) => {
     socket.emit('private message',{content: sendMessage, to: userId, from: userData._id})
   }
 
   const showStatus = (msg) => {
     if(!latestMessage || !Object.keys(latestMessage).length ) return false
-   
     return msg._id === latestMessage._id && msg.senderId === userData._id
   }
 
-    const fetchMessages = async (userId) => {
-      try {
-        const res = await axios.get(`http://localhost:3000/api/v1/chat/${userId}`, {
-          withCredentials: true
-        })
-
-        setMessage(res.data.messages)
-        if(res.data.result.modifiedCount > 0) {
-          socket.emit("read receipt", res.data.messages[res.data.messages.length - 1])
-        }
-       
-
+  const fetchMessages = async (userId) => {
+    try {
+      const res = await axios.get(`http://localhost:3000/api/v1/chat/${userId}`, {
+        withCredentials: true
+      })
+      setMessage(res.data.messages)
+      if(res.data.result.modifiedCount > 0) {
+        socket.emit("read receipt", res.data.messages[res.data.messages.length - 1])
+      }
       }catch(error) {
         console.log(error)
       }
-
     }
 
   useEffect(() => {
+
     chatEndRef.current?.scrollIntoView({behavior: "smooth"})
     setLatestMessage(message[message.length - 1])
     if(message.length){
@@ -79,7 +74,22 @@ const Chat = ({children }) => {
         }
       })
     }
+    message.filter(msg => 
+      (msg.senderIdv === userId && msg.receiverId === userData?._id) ||
+      (msg.senderId === userData?._id && msg.receiverId === userId)
+    ).map(msg => {
+      const dayKey =  new Date(msg.createdAt).toDateString
+      setGroupMessage(prev => {
+        const newGourp  = {...prev}
+
+        if(!newGourp[dayKey]) newGourp[dayKey] = []
+        newGourp[dayKey].push(msg)
+        return newGourp
+      })
+    })
+    
   }, [message])
+
   
   return (
 
@@ -93,7 +103,7 @@ const Chat = ({children }) => {
             <div key={msg._id} className={`w-96 mt-7 space-y-2 bg self-end ${msg.senderId === userId ? "mr-auto" : "ml-auto" } ml-5 mr-5`}>
                 <div key={msg._id} className={`${msg.senderId === userId ? " rounded-t-2xl rounded-br-2xl" : " rounded-t-2xl rounded-bl-2xl "} bg-blue-600 text-white border p-4`} >
                   <p>{msg.content}</p>
-                  <span className='text-white/70'>{msg.createdAt}</span>
+                  <span className='text-white/70'>{new Date(msg.createdAt).toLocaleTimeString()}</span>
                 </div>
                 {showStatus(msg) && <p>{msg.isSeen}</p>}
             </div>

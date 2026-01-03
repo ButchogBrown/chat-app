@@ -20,7 +20,6 @@ const login = () => {
   })
   useEffect(() => {
     if(userData?._id) {
-      console.log("youre still log in")
       navigate("/home", {replace: true})
     }
   }, [userData])

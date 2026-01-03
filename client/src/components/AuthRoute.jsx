@@ -6,8 +6,6 @@ import { Navigate } from 'react-router-dom'
 function AuthRoute({children}) {
 	const {serverError, setServerError} = useContext(ErrorContext)
 	const {userData, setUserData} = useContext(AuthContext)
-	console.log("userdata: ", userData)
-	console.log(serverError)
 	if(!userData?._id) {
 		return <Navigate to="/login" replace />
 	}

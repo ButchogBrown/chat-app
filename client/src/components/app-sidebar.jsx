@@ -41,10 +41,6 @@ export function AppSidebar() {
     
   }, [onlineUsers, currentOnlineUser, userData])
 
-  useEffect(() => {
-    console.log(filteredOnlineUser)
-  },[filteredOnlineUser])
-
   return (
     <Sidebar>
       <SidebarContent>

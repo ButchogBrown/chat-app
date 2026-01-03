@@ -9,7 +9,6 @@ function SocketProvider({ children }) {
 
     useEffect(() => {
       if(!userData) return
-      console.log("hello from hell")
       const temp = io("http://localhost:3000", {
         withCredentials: true
       });

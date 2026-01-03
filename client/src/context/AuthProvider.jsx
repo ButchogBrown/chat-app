@@ -9,7 +9,6 @@ function AuthProvider( { children } ) {
   const [userData, setUserData] = useState(null)
   const {serverError, setServerError} = useContext(ErrorContext)
   const fetchData = async () => {
-    console.log("hello")
     try {
       const res = await axios.get('http://localhost:3000/api/v1/chat/home',{
         withCredentials: true

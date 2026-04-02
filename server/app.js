@@ -10,6 +10,7 @@ const cors = require('cors')
 const {connectDB} = require('./db/connect') 
 const {notFound} = require('./middleware/not-found')
 const authRoute = require('./route/auth')
+const chatAi = require('./route/facehugginApi')
 const chat = require('./route/chat')
 const errorHandlerMiddleware = require('./middleware/error-handler')
 const authenticationMiddleware  = require('./middleware/auth')
@@ -43,6 +44,7 @@ app.use('/api/v1/chat', (req, res, next) => {
 })
 app.use('/api/v1/auth', authRoute)
 app.use('/api/v1/chat', chat)
+app.use('/api/v1', chatAi )
 
 
 let users = {}
@@ -81,6 +83,19 @@ io.on("connection", (socket) => {
     socket.on("read receipt", (data) => {
         const sender = users[data.senderId]
         io.to(sender.socketId).emit("read receipt", data)
+    })
+    socket.on('messageStatus', (data) => {
+        console.log('receiver read the message')
+        // console.log(data)
+        io.to(users[data.senderId].socketId).emit('messageStatus', data._id)
+    })
+
+    socket.on('typing', ({sendTo, from}) => {
+        io.to(users[sendTo].socketId).emit('typing', {typing: true, from})
+    })
+    socket.on('stopTyping', ({sendTo, from}) => {
+        console.log('it stop typing')
+        io.to(users[sendTo].socketId).emit('typing', {typing: false, from})
     })
     
 })

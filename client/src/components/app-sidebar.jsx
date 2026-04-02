@@ -72,6 +72,22 @@ export function AppSidebar() {
                   />
                 </div>
               </div>
+              <SidebarMenuItem >
+                  <SidebarMenuButton asChild>
+                    <Link to={`/chat/ai`} className={`flex items-center mb-2 rounded h-auto justify-between hover:bg-blue-500 transition duration-300 ${
+                        location.pathname === `/chat/ai` ? "bg-blue-200" : "bg-gray-50 "
+                      }`}>
+                      <div className="flex gap-2 items-center">
+                        <div className="bg-blue-400 rounded-full p-1 flex items-center ">
+                          <Inbox className="text-white" size={24} />
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Ask Ai</span>
+                        </div>
+                      </div>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               <p className="pl-3  text-base text-gray-500 pb-2">Online</p>
               {!filteredOnlineUser[undefined] &&  Object.values(filteredOnlineUser || {}).map((user) => (
                 <SidebarMenuItem key={user.userId}>

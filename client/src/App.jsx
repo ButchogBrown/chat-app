@@ -6,6 +6,7 @@ import Register from "./pages/auth/Register";
 import Chat from './pages/chat/Chat';
 import Default from './pages/chat/Default';
 import AuthRoute from './components/AuthRoute';
+import AiChat from './pages/chat/AiChat';
 
 function App() {
 
@@ -25,6 +26,11 @@ function App() {
             <Chat />
           </AuthRoute>
           
+        }/>
+        <Route path='/chat/ai' element={
+          <AuthRoute>
+            <AiChat />
+          </AuthRoute>
         }/>
       </Routes>
     </BrowserRouter>

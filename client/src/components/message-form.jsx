@@ -2,7 +2,7 @@ import { Input } from '@/components/ui/input'
 import { Paperclip, Smile, Send } from 'lucide-react';
 import React, { useState } from 'react'
 
-const MessageForm = ({ onSend }) => {
+const MessageForm = ({ onSend, onType }) => {
     const messageInput = document.getElementById('message-input')
     const [formData, setFormData] = useState({
         message: ''
@@ -11,6 +11,7 @@ const MessageForm = ({ onSend }) => {
         e.preventDefault()
         onSend(formData.message)
         messageInput.value = ''
+        onType(messageInput.value = '')
     }
 
 return (
@@ -19,7 +20,10 @@ return (
         <Paperclip size={30} color='gray' />
         <Input type="text" id="message-input" className="rounded-2xl text-gray-400 border-gray-300 bg-gray-100"
             placeholder="Type a message..." 
-            onChange={(e) => setFormData({...formData, message: e.target.value})}
+            onChange={(e) =>{ 
+                setFormData({...formData, message: e.target.value})
+                onType(e.target.value)}
+            }
             />
         <Smile size={30} color='gray' />
         <button type='submit' className='bg-gray-300 rounded p-1'>

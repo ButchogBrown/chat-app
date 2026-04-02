@@ -46,6 +46,7 @@ exports.login = async (req,res, next) => {
         }
         
         const token = jwt.sign({userId: user._id, userName: user.name}, process.env.JWT_SECRET, {expiresIn: '24h'})
+        console.log(token)
         return res.cookie("access_token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production"

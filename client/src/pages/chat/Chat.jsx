@@ -16,7 +16,7 @@ const Chat = ({children }) => {
   const [message, setMessage] = useState([])
   const [latestMessage, setLatestMessage] = useState()
   const [groupMessage, setGroupMessage] = useState({})
-
+  const [typing, isTyping] = useState(false)
 
   const { userId } = useParams()
   const chatEndRef = useRef(null)
@@ -33,6 +33,7 @@ const Chat = ({children }) => {
   }, [socket, userData, userId])
 
   const sendMessage = (sendMessage) => {
+
     socket.emit('private message',{content: sendMessage, to: userId, from: userData._id})
   }
 
@@ -56,6 +57,18 @@ const Chat = ({children }) => {
     }
 
   useEffect(() => {
+    if(!message || message.length === 0 ) return
+    // if(!userData || userData.length === 0) return 
+
+    /*if the current user is the reciever of the this message 
+      call the messageStatus event listener
+    */
+    const recentMessage = message[message.length - 1]
+    
+    if(userData._id === recentMessage.receiverId && recentMessage.isSeen !== 'seen' && recentMessage.senderId === userId) {
+      socket.emit('messageStatus', message[message.length - 1]);
+    }
+
 
     chatEndRef.current?.scrollIntoView({behavior: "smooth"})
     setLatestMessage(message[message.length - 1])
@@ -88,7 +101,34 @@ const Chat = ({children }) => {
       })
     })
     
-  }, [message])
+  }, [message, userData])
+  useEffect(() => {
+    socket.on('messageStatus', msgId => {
+      setMessage(prev => {
+        return prev.map(msg => 
+          msg._id === msgId ? {...msg, isSeen: 'seen'} : msg
+        )
+      })
+    
+    })
+  }, [socket])
+
+  const handleTyping = (value) => {
+    console.log("this is the value: ", value)
+    if (value.trim() !== "") {
+      socket.emit('typing', {sendTo: userId, from: userData._id})
+    } else {
+      socket.emit('stopTyping', {sendTo: userId, from: userData._id})
+    }
+  }
+  socket.on('typing', ({typing, from}) => {
+    console.log("from: ", from)
+    console.log("userid: ", userId)
+    if(userId === from) {
+      console.log('other party was typing')
+      isTyping(typing)
+    }  
+  })
 
   
   return (
@@ -109,9 +149,16 @@ const Chat = ({children }) => {
             </div>
 
           ))}
+          {typing && (
+              <div className="typing-indicator flex space-x-1 mt-1 mb-5 ml-5 p-2 ">
+                <span className="dot animate-bounce bg-gray-500 rounded-full w-2 h-2"></span>
+                <span className="dot animate-bounce bg-gray-500 rounded-full w-2 h-2 delay-150"></span>
+                <span className="dot animate-bounce bg-gray-500 rounded-full w-2 h-2 delay-300"></span>
+              </div>
+          )}
         </section >
         <section className='bg-yellow-50 w-full border-t border-gray-300 h-20 flex flex-col justify-center p-2' ref={chatEndRef}>
-          <MessageForm onSend={sendMessage} />
+          <MessageForm onSend={sendMessage} onType={handleTyping} />
         </section>  
       </div>
     </ChatLayout>

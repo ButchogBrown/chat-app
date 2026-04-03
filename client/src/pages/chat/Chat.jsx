@@ -21,6 +21,8 @@ const Chat = ({children }) => {
   const { userId } = useParams()
   const chatEndRef = useRef(null)
   useEffect(() => {
+    console.log(userData._id)
+    console.log(userId)
     if(socket) {
       fetchMessages(userId)
       socket.on('private message', (data) => {

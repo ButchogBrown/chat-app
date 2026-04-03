@@ -12,6 +12,18 @@ exports.savePrivateMessage = async ({content, to, from, isOnline}) => {
     return message 
     
 }
+exports.savePrivateMessage = async ({content, to, from, isOnline}) => {
+ 
+    const message = await Message.create({
+        senderId: from,
+        receiverId: to,
+        content: content,
+        isSeen: isOnline
+    })
+    return message 
+    
+}
+
 exports.fetchMessages = async(req, res, next) => {
     try {
         const { userId } = req.params

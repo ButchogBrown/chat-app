@@ -1,65 +1,79 @@
+# Real-Time Chat Application
 
-# Real-Time Chat App
-
-A full-stack real-time chat application built with **React**, **Node.js**, **Express**, and **Socket.io**.  
-Supports message sending, and read receipts.
+A full-stack real-time messaging system built with **React**, **Node.js**, **Express**, and **Socket.io**, featuring secure authentication and live communication between users.
 
 ---
 
-## Features
-
-- Real-time messaging between users
-- Seen status indicator
-- JWT-based authentication with cookies
-- Simple and responsive UI
-- Planned improvements: emoji support, file attachments, enhanced timestamp formatting
+##  Overview
+This application allows users to communicate instantly in real-time with authentication, message status tracking, and a responsive user interface.
 
 ---
 
-## Tech Stack
+##  Features
 
-- **Frontend:** React, Tailwind CSS
-- **Backend:** Node.js, Express.js, JWT for authentication, Cookie-based sessions
-- **Real-time Communication:** Socket.io
-- **Database:** MongoDB
-
----
-
-## Demo
-
-You can see the app in action here: [Live Demo](https://youtu.be/tY_I62hDTSk)  
-*(Replace `#` with your demo link if available)*
+-  Real-time messaging using Socket.io
+-  Read receipts (seen/unseen message status)
+-  Secure authentication using JWT stored in HttpOnly cookies
+-  User login and registration system
+-  Persistent chat sessions between users
+-  Responsive and user-friendly UI
 
 ---
 
-## Usage
+##  Tech Stack
 
-- Register and log in  
-- JWT stored in cookies handles user authentication  
-- Only logged-in users can send/receive messages  
-- Send messages to other users in real-time  
-- View read receipts  
+**Frontend:**
+- React
+- Tailwind CSS
 
----
+**Backend:**
+- Node.js
+- Express.js
+- JWT Authentication (Cookie-based sessions)
 
-## Screenshots
+**Real-Time Layer:**
+- Socket.io
 
-### Login Screen
-![Login Screen](screenshot/login.PNG)
-
-### Home Screen
-![Home Screen](screenshot/home.PNG)
-
-### Chat Screen
-![Chat Screen](screenshot/chat.PNG)
-
-### Register Screen
-![Register Screen](screenshot/register.PNG)
+**Database:**
+- MongoDB
 
 ---
 
-## Future Improvements
+##  Demo
+Live walkthrough of the application:  
+ https://youtu.be/tY_I62hDTSk
 
-- Emoji support for messages  
-- File/image attachments  
-- Improved timestamp formatting (e.g., “2 hours ago” for today)  
+---
+
+##  Screenshots
+
+**Login Page**
+![Login](screenshot/login.PNG)
+
+**Home Page**
+![Home](screenshot/home.PNG)
+
+**Chat Interface**
+![Chat](screenshot/chat.PNG)
+
+**Register Page**
+![Register](screenshot/register.PNG)
+
+---
+
+##  How It Works
+
+- Users register and log in securely using JWT authentication
+- Auth tokens are stored in HttpOnly cookies for security
+- Once authenticated, users can join real-time chat sessions
+- Messages are instantly delivered using Socket.io
+- Read receipts update message status in real time
+
+---
+
+##  Future Improvements
+
+- Emoji support 
+- File and image sharing
+- Typing indicators
+- Message timestamps in human-readable format (e.g. “2 hours ago”)
